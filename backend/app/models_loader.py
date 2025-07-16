@@ -1,9 +1,11 @@
 import torch
 import torch.nn as nn
 from torchvision.models import efficientnet_b0, resnet18
+import os
 
-MODEL_PATH_EFFNET = "model/model.pth"
-MODEL_PATH_RESNET = "model/resnet18_skin_cancer.pth"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH_EFFNET = os.path.join(BASE_DIR, "model", "model.pth")
+MODEL_PATH_RESNET = os.path.join(BASE_DIR, "model", "resnet18_skin_cancer.pth")
 
 EFFICIENTNET_CLASSES = ['nv', 'mel', 'bkl', 'bcc', 'akiec', 'vasc', 'df']
 RESNET18_CLASSES = ['benign', 'malignant', 'suspicious', 'other']

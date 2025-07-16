@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Cpu, Settings } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -19,45 +25,65 @@ const models: ModelOption[] = [
     name: "EfficientNet B0",
     accuracy: "89.2%",
     description: "Balanced accuracy and speed",
-    recommended: true
+    recommended: true,
   },
   {
     id: "resnet50",
     name: "ResNet-50",
     accuracy: "87.8%",
-    description: "Robust feature extraction"
+    description: "Robust feature extraction",
   },
   {
     id: "mobilenet-v3",
     name: "MobileNet V3",
     accuracy: "85.1%",
-    description: "Optimized for fast inference"
-  }
+    description: "Optimized for fast inference",
+  },
 ];
 
-const ModelSelector = ({ 
-  selectedFile, 
-  onPredict 
-}: { 
-  selectedFile: File | null; 
-  onPredict: (model: string) => void; 
+const ModelSelector = ({
+  selectedFile,
+  onPredict,
+}: {
+  selectedFile: File | null;
+  onPredict: (result: any) => void;
 }) => {
   const [selectedModel, setSelectedModel] = useState("efficientnet-b0");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handlePredict = async () => {
     if (!selectedFile) return;
-    
     setIsLoading(true);
-    
-    // Simulate prediction delay
-    setTimeout(() => {
-      onPredict(selectedModel);
+    setError(null);
+    try {
+      // Map UI model id to backend model name
+      let backendModel = "efficientnet";
+      if (selectedModel.includes("resnet")) backendModel = "resnet18";
+      // Prepare form data
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      // Call backend
+      const response = await fetch(
+        `http://localhost:8000/predict/${backendModel}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      if (!response.ok) {
+        throw new Error((await response.json()).detail || "Prediction failed");
+      }
+      const data = await response.json();
+      onPredict(data);
+    } catch (err: any) {
+      setError(err.message || "Prediction failed");
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
-  const selectedModelInfo = models.find(m => m.id === selectedModel);
+  const selectedModelInfo = models.find((m) => m.id === selectedModel);
 
   return (
     <Card className="w-full">
@@ -98,7 +124,9 @@ const ModelSelector = ({
         {selectedModelInfo && (
           <div className="p-4 bg-muted rounded-lg space-y-2">
             <div className="flex items-center justify-between">
-              <h4 className="font-medium text-foreground">{selectedModelInfo.name}</h4>
+              <h4 className="font-medium text-foreground">
+                {selectedModelInfo.name}
+              </h4>
               <Badge variant="outline">{selectedModelInfo.accuracy}</Badge>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -118,6 +146,9 @@ const ModelSelector = ({
           <Cpu className="w-5 h-5 mr-2" />
           {isLoading ? "Analyzing..." : "Predict Diagnosis"}
         </Button>
+        {error && (
+          <p className="text-xs text-destructive text-center mt-2">{error}</p>
+        )}
 
         {!selectedFile && (
           <p className="text-xs text-muted-foreground text-center">

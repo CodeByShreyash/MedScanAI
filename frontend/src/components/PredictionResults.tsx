@@ -6,15 +6,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 interface PredictionData {
-  prediction: string;
+  model: string;
+  predicted_class: string;
   confidence: number;
-  confidenceBreakdown: Array<{
-    class: string;
-    confidence: number;
-  }>;
+  probabilities: { [key: string]: number };
+  gradcam_png: string;
 }
 
-const PredictionResults = ({ prediction }: { prediction: PredictionData | null }) => {
+const PredictionResults = ({
+  prediction,
+}: {
+  prediction: PredictionData | null;
+}) => {
   const [showHeatmap, setShowHeatmap] = useState(false);
 
   if (!prediction) {
@@ -31,7 +34,8 @@ const PredictionResults = ({ prediction }: { prediction: PredictionData | null }
   }
 
   const isHighConfidence = prediction.confidence > 0.8;
-  const isBenign = prediction.prediction.toLowerCase().includes('benign');
+  const isBenign = prediction.predicted_class.toLowerCase().includes("benign");
+  const classProbabilities = Object.entries(prediction.probabilities);
 
   return (
     <div className="space-y-6">
@@ -50,22 +54,21 @@ const PredictionResults = ({ prediction }: { prediction: PredictionData | null }
         <CardContent className="space-y-4">
           <div className="text-center">
             <h3 className="text-3xl font-bold text-foreground mb-2">
-              {prediction.prediction}
+              {prediction.predicted_class}
             </h3>
-            <Badge 
+            <Badge
               variant={isHighConfidence ? "default" : "secondary"}
               className="text-lg px-4 py-2"
             >
               {(prediction.confidence * 100).toFixed(1)}% Confidence
             </Badge>
           </div>
-          
+
           <div className="space-y-2">
-            <p className="text-sm font-medium text-foreground">Confidence Level</p>
-            <Progress 
-              value={prediction.confidence * 100} 
-              className="h-3"
-            />
+            <p className="text-sm font-medium text-foreground">
+              Confidence Level
+            </p>
+            <Progress value={prediction.confidence * 100} className="h-3" />
           </div>
         </CardContent>
       </Card>
@@ -76,17 +79,17 @@ const PredictionResults = ({ prediction }: { prediction: PredictionData | null }
           <CardTitle>Class Probabilities</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {prediction.confidenceBreakdown.map((item, index) => (
+          {classProbabilities.map(([className, prob], index) => (
             <div key={index} className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-foreground">
-                  {item.class}
+                  {className}
                 </span>
                 <span className="text-sm text-muted-foreground">
-                  {(item.confidence * 100).toFixed(1)}%
+                  {(prob * 100).toFixed(1)}%
                 </span>
               </div>
-              <Progress value={item.confidence * 100} className="h-2" />
+              <Progress value={prob * 100} className="h-2" />
             </div>
           ))}
         </CardContent>
@@ -104,23 +107,29 @@ const PredictionResults = ({ prediction }: { prediction: PredictionData | null }
           <p className="text-sm text-muted-foreground">
             The model focused on the highlighted regions to make its prediction.
           </p>
-          
           <div className="relative">
-            <div className="w-full h-48 bg-gradient-subtle rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-              <div className="text-center">
-                <Eye className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  Grad-CAM Heatmap
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Visual explanation coming soon
-                </p>
+            {prediction.gradcam_png && showHeatmap ? (
+              <img
+                src={`data:image/png;base64,${prediction.gradcam_png}`}
+                alt="Grad-CAM Heatmap"
+                className="w-full h-48 object-contain rounded-lg border shadow-card"
+              />
+            ) : (
+              <div className="w-full h-48 bg-gradient-subtle rounded-lg border-2 border-dashed border-border flex items-center justify-center">
+                <div className="text-center">
+                  <Eye className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    Grad-CAM Heatmap
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Click below to show the attention map
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
-          
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full"
             onClick={() => setShowHeatmap(!showHeatmap)}
           >

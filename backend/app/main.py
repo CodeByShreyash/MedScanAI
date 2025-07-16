@@ -1,5 +1,6 @@
 import io, base64
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 import numpy as np
 import torch
@@ -13,6 +14,15 @@ from .utils.gradcam import GradCAM, overlay_heatmap
 from .schemas import PredictionResponse
 
 app = FastAPI(title="SkinSight AI Backend")
+
+# Enable CORS for frontend-backend connection during development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change to specific origins in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ---------- image pre-processing ----------
 transform = transforms.Compose([

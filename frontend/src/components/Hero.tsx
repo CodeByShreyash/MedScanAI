@@ -37,14 +37,14 @@ const Hero = () => {
             Get Started
             <ArrowDown className="w-5 h-5 ml-2" />
           </Button>
-          
+{/*           
           <Button 
             variant="outline" 
             size="lg" 
             className="text-lg px-8 py-4 border-white/30 text-black hover:bg-black/10 hover:text-white"
           >
             Learn More
-          </Button>
+          </Button> */}
         </div>
       </div>
       

@@ -120,6 +120,11 @@ const ImageUploader = ({ onImageSelect }: { onImageSelect: (file: File) => void 
             accept="image/*"
             onChange={handleChange}
           />
+          <p className="text-xs text-destructive mt-2">
+            <strong>Note:</strong> This tool is only for dermoscopic images of
+            skin lesions. Uploading other images will result in invalid
+            predictions.
+          </p>
         </div>
       </CardContent>
     </Card>

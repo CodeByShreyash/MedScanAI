@@ -40,31 +40,31 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Resources */}
           <div className="space-y-4">
             <h3 className="font-semibold">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center space-x-1">
+                <a href="https://github.com/CodeByShreyash/MedScanAI" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center space-x-1">
                   <Github className="w-4 h-4" />
                   <span>GitHub Repository</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center space-x-1">
                   <span>Hugging Face Model</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
-              </li>
+              </li> */}
               <li>
-                <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center space-x-1">
+                <a href="https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center space-x-1">
                   <span>ISIC Dataset</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
             </ul>
           </div>
+
 
           {/* Contact */}
           <div className="space-y-4">

@@ -76,7 +76,7 @@ const ModelInfo = () => {
               </div>
               <Button variant="outline" size="sm" className="w-full">
                 <ExternalLink className="w-4 h-4 mr-2" />
-                View Dataset
+                <a href="https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000">View Dataset</a>
               </Button>
             </CardContent>
           </Card>
